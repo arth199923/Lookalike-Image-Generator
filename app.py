@@ -6,10 +6,10 @@ import io
 from PIL import Image
 
 # Define your Segmind API key
-SegmindAPIKey = "SG_5a02e89ab1a1ecb4"
+SegmindAPIKey = "SG_4ec6a76090edb729"
 
 # Define your OpenAI API key
-OpenAIKey = "sk-proj-2F1kMo0s4M4KP3xhKgTPT3BlbkFJOM9v6A7B7fBgjWFdnbj5"
+OpenAIKey = "sk-proj-SjrP1D7dphvzMIL6C9oXT3BlbkFJbOfYgMozDALea6Gj9zRx"
 
 # Define your functions here
 
@@ -24,15 +24,8 @@ def get_base64_image(uploaded_image):
     # Encode image to base64
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-def get_image_caption(image, caption_type):
-    if caption_type == "A person smiling in a passport-style photo":
-        return "smiling"
-    elif caption_type == "Placeholder caption for the uploaded image":
-        return "normalpic"
-    elif caption_type == "A person with a sad expression in the photo":
-        return "sad"
-    else:
-        return "Invalid caption type selected."
+def get_image_caption(image):
+    return "Placeholder caption for the uploaded image."
 
 def generate_images(base64image, imagecaption, count):
     url = "https://api.segmind.com/v1/ssd-img2img"
@@ -59,9 +52,9 @@ def generate_images(base64image, imagecaption, count):
 
     return generated_images
 
-def process_image(uploaded_image, count, caption_type):
+def process_image(uploaded_image, count):
     base64image = get_base64_image(uploaded_image)
-    imagecaption = get_image_caption(uploaded_image, caption_type)
+    imagecaption = get_image_caption(uploaded_image)
     generated_images = generate_images(base64image, imagecaption, count)
     return imagecaption, generated_images
 
@@ -74,22 +67,17 @@ def main():
     uploaded_image = st.file_uploader("Upload Image", type=['jpg', 'jpeg', 'png'])
 
     if uploaded_image is not None:
-        count = st.selectbox("Number of Images", options=[1, 2, 3, 4, 5])
-        
-        caption_type = st.radio("Choose how you'd like your look-alike to appear:?", 
-                                options=["smiling face", 
-                                         "Normal face", 
-                                         "Sad face"])
+        count = st.selectbox("Number of Images", options=[1, 2, 3])
         
         if st.button("Generate Images"):
-            imagecaption, generated_images = process_image(uploaded_image, count, caption_type)
-            
+            imagecaption, generated_images = process_image(uploaded_image, count)
+
             st.text("AI Generated Caption:")
             st.text(imagecaption)
 
             # Display each generated image with its caption
             for i, image in enumerate(generated_images):
                 st.image(image, caption=f"Generated Image {i+1}", width=200)
-
+                
 if __name__ == "__main__":
     main()
